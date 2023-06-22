@@ -4,7 +4,7 @@ import os
 import requests
 from collections import Counter
 
-YOLO_URL = 'http://localhost:8081'
+YOLO_URL = 'http://yolo5:8081'
 
 
 class Bot:
@@ -82,27 +82,34 @@ class ObjectDetectionBot(Bot):
 
         if message.chat.type == 'private' or ():
             if self.is_current_msg_photo():
-                photo_path = self.download_user_photo()
+                self.detect_objects()
 
-                # Send the photo to the YOLO service for object detection
-                res = requests.post(f'{YOLO_URL}/predict', files={
-                    'file': (photo_path, open(photo_path, 'rb'), 'image/png')
-                })
 
-                if res.status_code == 200:
-                    detections = res.json()
-                    logger.info(f'response from detect service with {detections}')
+    def detect_objects(self):
+        photo_path = self.download_user_photo()
 
-                    # calc summary
-                    element_counts = Counter([l['class'] for l in detections])
-                    summary = 'Objects Detected:\n'
-                    for element, count in element_counts.items():
-                        summary += f"{element}: {count}\n"
+        # Send the photo to the YOLO service for object detection
+        res = requests.post(f'{YOLO_URL}/predict', files={
+            'file': (photo_path, open(photo_path, 'rb'), 'image/png')
+        })
 
-                    self.send_text(summary)
+        if res.status_code == 200:
+            detections = res.json()
+            logger.info(f'response from detect service with {detections}')
 
-                else:
-                    self.send_text('Failed to perform object detection. Please try again later.')
+            # calc summary
+            element_counts = Counter([l['class'] for l in detections])
+            summary = 'Objects Detected:\n'
+            for element, count in element_counts.items():
+                summary += f"{element}: {count}\n"
+
+            self.send_text_with_quote(summary, message_id=self.current_msg.message_id)
+
+            # Delete the photo file
+            os.remove(photo_path)
+
+        else:
+            self.send_text('Failed to perform object detection. Please try again later.')
 
 
 
@@ -135,10 +142,7 @@ if __name__ == '__main__':
     def handle_yolo(message):
         if message.reply_to_message and message.reply_to_message.photo:
             my_bot.current_msg = message.reply_to_message
-            my_bot.handle_message(message.reply_to_message)
-        elif message.photo:
-            my_bot.current_msg = message
-            my_bot.handle_message(message)
+            my_bot.detect_objects()
         else:
             my_bot.send_text('Please tag an image or send an image for object detection.')
 

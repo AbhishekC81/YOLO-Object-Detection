@@ -6,6 +6,9 @@ from detect import run
 import uuid
 import yaml
 from loguru import logger
+import boto3
+import json
+
 
 with open("data/coco128.yaml", "r") as stream:
     names = yaml.safe_load(stream)['names']
@@ -25,6 +28,13 @@ app = Flask(__name__, static_url_path='')
 UPLOAD_FOLDER = 'data/images'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+
+# Initialise BOTO3 Client
+with open('config.json') as config_file:
+    config = json.load(config_file)
+    bucket_name = config['img_bucket']
+
+s3_client = boto3.client('s3')
 
 @app.route('/predict', methods=['POST'])
 def upload_file_api():
@@ -56,8 +66,17 @@ def upload_file_api():
         pred_result_img = Path(f'static/data/{prediction_id}/{filename}')
         pred_result_path = Path(f'static/data/{prediction_id}/labels/{filename.split(".")[0]}.txt')
 
-        # TODO upload client original img (p) and predicted img (pred_result_img) to S3 using boto3
-        #  reference: https://boto3.amazonaws.com/v1/documentation/api/latest/guide/s3-uploading-files.html
+
+        # Upload client original img (p) and predicted img (pred_result_img) to S3 using boto3
+
+        # Upload original image (p)
+        with open(p, 'rb') as original_img:
+            s3_client.upload_fileobj(original_img, bucket_name, f'original/{filename}')
+
+        # Upload predicted image (pred_result_img)
+        with open(pred_result_img, 'rb') as predicted_img:
+            s3_client.upload_fileobj(predicted_img, bucket_name, f'predicted/{filename}')
+
 
         labels = []
         if pred_result_path.exists():

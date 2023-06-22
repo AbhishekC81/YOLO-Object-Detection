@@ -1,6 +1,9 @@
 flask
 pyyaml
 loguru
+boto3
+detect
+
 
 # testing
 

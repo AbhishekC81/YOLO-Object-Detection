@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  frontend:
+    container_name: frontend
+    image: abhishekc81/yolo-vision_frontend:0.0.1
+    networks:
+      - object-detection
+    ports:
+      - "8082:8082"
+    depends_on:
+      - mongodb
+      - yolo5
+
+  yolo5:
+    container_name: yolo5
+    networks:
+      - object-detection
+    image: abhishekc81/yolo-vision_backend:0.0.1
+    ports:
+      - "8081:8081"
+
+  mongodb:
+    container_name: mongodb
+    image: mongo:latest
+    networks:
+      - object-detection
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb:/data/db
+
+  telegram-bot:
+    container_name: telegram-bot
+    image: abhishekc81/yolo-vision-bot:0.0.1
+
+    networks:
+      - object-detection
+    depends_on:
+      - yolo5
+
+
+volumes:
+  mongodb:
+    driver: local
+
+networks:
+  object-detection:
+    name: object-detection
+    driver: bridge

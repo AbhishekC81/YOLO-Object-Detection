@@ -3,7 +3,7 @@ version: '3.8'
 services:
   frontend:
     container_name: frontend
-    image: abhishekc81/yolo-vision_frontend:0.0.1
+    image: abhishekc81/yolo-vision_frontend:0.0.2
     networks:
       - object-detection
     ports:
@@ -23,6 +23,7 @@ services:
   mongodb:
     container_name: mongodb
     image: mongo:latest
+
     networks:
       - object-detection
     restart: always
@@ -33,7 +34,7 @@ services:
 
   telegram-bot:
     container_name: telegram-bot
-    image: abhishekc81/yolo-vision-bot:0.0.1
+    image: abhishekc81/yolo-vision-bot:0.0.2
 
     networks:
       - object-detection

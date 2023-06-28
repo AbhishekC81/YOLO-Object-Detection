@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yolo5-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: yolo5
+  template:
+    metadata:
+      labels:
+        app: yolo5
+    spec:
+      containers:
+        - name: yolo5
+          image: 854171615125.dkr.ecr.eu-north-1.amazonaws.com/abhishekc-yolo5:${BUILD_NUMBER}
+          ports:
+            - containerPort: 8080

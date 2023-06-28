@@ -1,7 +1,7 @@
 pipeline {
 
     agent any
-
+	
 
     stages {
 
@@ -42,6 +42,14 @@ pipeline {
             }
 
         }
+        
+        stage('Trigger Deploy') {
+        	steps {
+        		build job: 'Yolo5Deploy', wait: false, parameters: [
+            	string(name: 'YOLO5_IMAGE_URL', value: "854171615125.dkr.ecr.eu-north-1.amazonaws.com/abhishekc-yolo5:${BUILD_NUMBER}")
+        		]
+    		}
+		}
 
     }
 

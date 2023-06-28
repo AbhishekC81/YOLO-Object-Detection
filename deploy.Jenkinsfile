@@ -6,7 +6,9 @@ pipeline {
     stages {
         stage('Deploy') {
             steps {
-                sh 'kubectl apply -f deployment.yaml'
+                withEnv(['KUBECONFIG=$HOME/.kube/config']) {
+            sh 'kubectl apply -f deployment.yaml'
+        }
             }
         }
     }

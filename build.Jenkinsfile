@@ -3,6 +3,8 @@ pipeline {
     agent any
 	
 	environment {
+		AWS_REGION = 'us-north-1'
+        ECR_REGISTRY_URL = '854171615125.dkr.ecr.eu-north-1.amazonaws.com'
         DOCKER_IMAGE_TAG = '0.0.1'
     }
 
@@ -13,7 +15,7 @@ pipeline {
             steps {
 
                 sh '''
-                aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 854171615125.dkr.ecr.eu-north-1.amazonaws.com
+                aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY_URL}
 
                 '''
 
@@ -38,8 +40,8 @@ pipeline {
             steps {
 
                 sh '''
-                docker tag abhishekc-yolo5:latest 854171615125.dkr.ecr.eu-north-1.amazonaws.com/abhishekc-yolo5:${DOCKER_IMAGE_TAG}
-                docker push 854171615125.dkr.ecr.eu-north-1.amazonaws.com/abhishekc-yolo5:${DOCKER_IMAGE_TAG}
+                docker tag abhishekc-yolo5:latest ${ECR_REGISTRY_URL}/abhishekc-yolo5:${DOCKER_IMAGE_TAG}
+                docker push ${ECR_REGISTRY_URL}/abhishekc-yolo5:${DOCKER_IMAGE_TAG}
                 '''
 
             }
@@ -49,7 +51,7 @@ pipeline {
         stage('Trigger Deploy') {
         	steps {
         		build job: 'Yolo5Deploy', wait: false, parameters: [
-            	string(name: 'YOLO5_IMAGE_URL', value: "854171615125.dkr.ecr.eu-north-1.amazonaws.com/abhishekc-yolo5:${DOCKER_IMAGE_TAG}")
+            	string(name: 'YOLO5_IMAGE_URL', value: "${ECR_REGISTRY_URL}/abhishekc-yolo5:${DOCKER_IMAGE_TAG}")
         		]
     		}
 		}

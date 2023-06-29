@@ -3,7 +3,7 @@ pipeline {
     agent any
 	
 	environment {
-		AWS_REGION = 'us-north-1'
+		AWS_REGION = 'eu-north-1'
         ECR_REGISTRY_URL = '854171615125.dkr.ecr.eu-north-1.amazonaws.com'
         DOCKER_IMAGE_TAG = '0.0.1'
     }

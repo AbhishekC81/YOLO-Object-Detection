@@ -35,8 +35,8 @@ pipeline {
             steps {
 
                 sh '''
-                docker tag abhishekc-yolo5:latest 854171615125.dkr.ecr.eu-north-1.amazonaws.com/abhishekc-yolo5:${BUILD_NUMBER}
-                docker push 854171615125.dkr.ecr.eu-north-1.amazonaws.com/abhishekc-yolo5:${BUILD_NUMBER}
+                docker tag abhishekc-yolo5:latest 854171615125.dkr.ecr.eu-north-1.amazonaws.com/abhishekc-yolo5:${BUILD_TAG}
+                docker push 854171615125.dkr.ecr.eu-north-1.amazonaws.com/abhishekc-yolo5:${BUILD_TAG}
                 '''
 
             }
@@ -46,7 +46,7 @@ pipeline {
         stage('Trigger Deploy') {
         	steps {
         		build job: 'Yolo5Deploy', wait: false, parameters: [
-            	string(name: 'YOLO5_IMAGE_URL', value: "854171615125.dkr.ecr.eu-north-1.amazonaws.com/abhishekc-yolo5:${BUILD_NUMBER}")
+            	string(name: 'YOLO5_IMAGE_URL', value: "854171615125.dkr.ecr.eu-north-1.amazonaws.com/abhishekc-yolo5:${BUILD_TAG}")
         		]
     		}
 		}

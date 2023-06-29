@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: yolo5-app
-          image: 854171615125.dkr.ecr.eu-north-1.amazonaws.com/abhishekc-yolo5:${BUILD_NUMBER}
+          image: 854171615125.dkr.ecr.eu-north-1.amazonaws.com/abhishekc-yolo5:${BUILD_TAG}
           ports:
             - containerPort: 8080
 ---
